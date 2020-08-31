@@ -45,24 +45,6 @@ $ swagger-ui --help
     $ swagger-ui https://example.com/my-api.toml --do-not-open
 ```
 
-### Examples
-
-#### Local file
-
-```bash
-# http://localhost:8080
-swagger-ui /path/to/my/local/file
-
-# with custom port 8181
-# swagger-ui --port=8181 /path/to/my/local/file
-```
-
-#### From remote HTTP server
-
-```bash
-swagger-ui https://petstore.swagger.io/v2/swagger.json
-```
-
 ## License
 
 [GPL 3.0](./LICENSE)
