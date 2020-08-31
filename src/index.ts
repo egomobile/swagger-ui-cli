@@ -182,6 +182,8 @@ function createHttpDocReader(swaggerUri: string): DocumentReader {
         if (doc === NOT_SUPPORTED) {
             exitWith(ExitCode.InvalidDocumentFormat, `${swaggerUri} must be of one of the following types: json, toml, yaml, yml!`);
         }
+
+        return doc;
     };
 }
 
