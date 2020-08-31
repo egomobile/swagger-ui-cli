@@ -314,7 +314,7 @@ async function handleHttpRequest(req: IncomingMessage, res: ServerResponse) {
         };
 
         if (!cacheEntry) {
-            if (file.startsWith(swaggerUIDir)) {
+            if (file.startsWith(swaggerUIDir + path.sep)) {
                 if (await exists(file)) {
                     const fileStat = await stat(file);
                     if (fileStat.isFile()) {
