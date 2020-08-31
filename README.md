@@ -41,9 +41,17 @@ $ swagger-ui --help
     Using port 8181 and load document from HTTP server
     $ swagger-ui --port=8181 https://petstore.swagger.io/v2/swagger.json
 
-    Do not open browser, after server gas been started
+    Do not open browser, after server has been started
     $ swagger-ui https://example.com/my-api.toml --do-not-open
 ```
+
+## Download
+
+You can download documents via browser or HTTP client directly. Examples:
+
+* http://localhost:8080/json ([JSON](https://en.wikipedia.org/wiki/JSON))
+* http://localhost:8080/toml ([TOML](https://en.wikipedia.org/wiki/TOML))
+* http://localhost:8080/yaml ([YAML](https://en.wikipedia.org/wiki/YAML))
 
 ## License
 

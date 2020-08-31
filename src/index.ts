@@ -91,7 +91,7 @@ Examples
   Using port 8181 and load document from HTTP server
   $ swagger-ui --port=8181 https://petstore.swagger.io/v2/swagger.json
 
-  Do not open browser, after server gas been started
+  Do not open browser, after server has been started
   $ swagger-ui https://example.com/my-api.toml --do-not-open
 `, {
     flags: {
