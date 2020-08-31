@@ -1,0 +1,17 @@
+{
+    "extends": "@egodigital/tsconfig",
+    "compilerOptions": {
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "esModuleInterop": true,
+        "declaration": true,
+        "target": "es2017",
+        "lib": [
+            "es2017"
+        ],
+        "removeComments": false
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}

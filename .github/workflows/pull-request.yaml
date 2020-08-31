@@ -1,0 +1,21 @@
+name: Check pull requests
+on:
+  pull_request:
+    types: ["opened", "edited", "reopened", "synchronize"]
+jobs:
+  check-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.0.0
+      - name: Setup Node 10
+        uses: actions/setup-node@v1.1.0
+        with:
+          version: 10
+          registry-url: https://registry.npmjs.org/
+      - name: Install dependencies
+        run: npm install
+      - name: Lint code
+        run: npm run lint
+      - name: Build code
+        run: npm run build

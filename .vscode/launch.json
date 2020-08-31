@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "Debug: Swagger UI CLI",
+            "request": "launch",
+            "runtimeArgs": [
+                "run",
+                "dev"
+            ],
+            "runtimeExecutable": "npm",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "pwa-node"
+        }
+    ]
+}
