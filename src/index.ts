@@ -27,7 +27,7 @@ import path from 'path';
 const sanitizeFilename = require('sanitize-filename');
 import toml from '@iarna/toml';
 import yaml from 'js-yaml';
-import { Optional, Nilable } from '@egodigital/types';
+import { Nilable } from '@egodigital/types';
 import { createServer, IncomingMessage, Server, ServerResponse } from 'http';
 import { getAbsoluteFSPath } from 'swagger-ui-dist';
 import { promisify } from 'util';
@@ -64,6 +64,7 @@ const DEFAULT_CHARSET_HTTP = 'utf-8';
 const MIME_JSON = 'application/json';
 const MIME_TOML = 'application/toml';
 const MIME_YAML = 'application/x-yaml';
+const NOT_SUPPORTED = Symbol('NOT_SUPPORTED');
 
 const fileCache: { [path: string]: IFileCacheEntry } = {};
 const swaggerDocuments: { [name: string]: ISwaggerDocument } = {};
@@ -113,6 +114,16 @@ function createHttpDocReader(swaggerUri: string): DocumentReader {
     return async () => {
         customUrlInSwaggerUI = swaggerUri;
 
+        // supported content type by file extension
+        let supportedTypeByFileExt: Nilable<string>;
+        if (swaggerUri.endsWith('.json')) {
+            supportedTypeByFileExt = MIME_JSON;
+        } else if (swaggerUri.endsWith('.yaml') || swaggerUri.endsWith('.yml')) {
+            supportedTypeByFileExt = MIME_YAML;
+        } else if (swaggerUri.endsWith('.toml')) {
+            supportedTypeByFileExt = MIME_TOML;
+        }
+
         const resp = await withSpinner(
             `Download from ${swaggerUri}`,
             () => axios.get<Buffer>(swaggerUri, {
@@ -121,54 +132,56 @@ function createHttpDocReader(swaggerUri: string): DocumentReader {
             , '🚚'
         );
 
+        const getStringData = (enc: string) => {
+            try {
+                return resp.data.toString(enc);
+            } catch { }
+
+            return resp.data.toString(DEFAULT_CHARSET);
+        };
+
+        const tryParseDoc = (type: Nilable<string>, enc = DEFAULT_CHARSET) => {
+            if (type?.endsWith('json')) {
+                return JSON.parse(getStringData(enc));
+            } else if (type?.endsWith('yaml')) {
+                return yaml.safeLoad(getStringData(enc));
+            } else if (type?.endsWith('toml')) {
+                return toml.parse(getStringData(enc));
+            }
+
+            return NOT_SUPPORTED;
+        };
+
+        let doc: any = NOT_SUPPORTED;
+
         const contentTypeHeader = resp.headers?.['content-type'];
         if (typeof contentTypeHeader === 'string') {
             const ct = contentType.parse(contentTypeHeader);
 
             const charset = ct.parameters['charset']?.toLowerCase().trim().split('-').join('');
             const enc = charset || DEFAULT_CHARSET;
-            const getStringData = () => {
-                try {
-                    return resp.data.toString(enc);
-                } catch { }
 
-                return resp.data.toString(DEFAULT_CHARSET);
-            };
-
-            let type: Optional<string> = ct.type?.toLowerCase().trim();
-
+            let type: Nilable<string> = ct.type?.toLowerCase().trim();
             if (type?.endsWith('json')) {
                 type = MIME_JSON;
             } else if (type?.endsWith('yaml')) {
                 type = MIME_YAML;
             } else if (type?.endsWith('toml')) {
                 type = MIME_TOML;
-            } else {
-                type = undefined;
             }
 
-            if (!type) {
-                // try detect by extension
-
-                if (swaggerUri.endsWith('.json')) {
-                    type = MIME_JSON;
-                } else if (swaggerUri.endsWith('.yaml') || swaggerUri.endsWith('.yml')) {
-                    type = MIME_YAML;
-                } else if (swaggerUri.endsWith('.toml')) {
-                    type = MIME_TOML;
-                }
-            }
-
-            if (type?.endsWith('json')) {
-                return JSON.parse(getStringData());
-            } else if (type?.endsWith('yaml')) {
-                return yaml.safeLoad(getStringData());
-            } else if (type?.endsWith('toml')) {
-                return toml.parse(getStringData());
-            }
+            // try parse by content type
+            doc = tryParseDoc(type, enc);
         }
 
-        exitWith(ExitCode.InvalidDocumentFormat, `${swaggerUri} must be of one of the following types: json, toml, yaml, yml!`);
+        if (doc === NOT_SUPPORTED) {
+            // now try by file extension
+            doc = tryParseDoc(supportedTypeByFileExt);
+        }
+
+        if (doc === NOT_SUPPORTED) {
+            exitWith(ExitCode.InvalidDocumentFormat, `${swaggerUri} must be of one of the following types: json, toml, yaml, yml!`);
+        }
     };
 }
 
