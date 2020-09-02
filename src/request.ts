@@ -200,7 +200,7 @@ export default (): RequestListener => {
             res.writeHead(404);
             res.end();
         } catch (e) {
-            console.error('swagger-ui-cli', e);
+            console.error('[ERROR]', e);
 
             if (!res.headersSent) {
                 res.writeHead(500);
