@@ -73,130 +73,140 @@ export default (): RequestListener => {
     const indexHtmlHash = hashData(indexHtml);
 
     return async (req: IncomingMessage, res: ServerResponse) => {
-        for (const name in swaggerDocuments) {
-            const basePath = '/' + name;
+        try {
+            for (const name in swaggerDocuments) {
+                const basePath = '/' + name;
 
-            const url = req.url?.split(path.sep).join('/').trim();
-            if (!url?.startsWith(basePath)) {
-                continue;
-            }
+                const url = req.url?.split(path.sep).join('/').trim();
+                if (!url?.startsWith(basePath)) {
+                    continue;
+                }
 
-            const relUrl = normalizePath(url.substr(basePath.length));
+                const relUrl = normalizePath(url.substr(basePath.length));
 
-            const swaggerDoc = swaggerDocuments[name];
-            const contentDisposition = (ext: string): OutgoingHttpHeaders => ({
-                'Content-Disposition': `attachment; filename="${swaggerDoc.fileName}.${ext}`
-            });
+                const swaggerDoc = swaggerDocuments[name];
+                const contentDisposition = (ext: string): OutgoingHttpHeaders => ({
+                    'Content-Disposition': `attachment; filename="${swaggerDoc.fileName}.${ext}`
+                });
 
-            // index.html
-            if (['/', '/index.html'].includes(relUrl)) {
-                res.writeHead(200, createHeaders({
-                    ...etag(indexHtml, indexHtmlHash),
-                    'Content-Type': indexHtmlContentType
-                }));
-                res.end(indexHtml);
+                // index.html
+                if (['/', '/index.html'].includes(relUrl)) {
+                    res.writeHead(200, createHeaders({
+                        ...etag(indexHtml, indexHtmlHash),
+                        'Content-Type': indexHtmlContentType
+                    }));
+                    res.end(indexHtml);
 
-                return;
-            }
+                    return;
+                }
 
-            // swagger-ui-init.js
-            if (relUrl.startsWith('/swagger-ui-init.js')) {
-                const js = Buffer.from(
-                    swaggerUiInitTpl.replace('<% swaggerOptions %>', `var options = ${JSON.stringify({
-                        // swaggerDoc: options.document || undefined,
-                        swaggerDoc: swaggerDoc.object,
-                        // customOptions: options.uiOptions || {},
-                        customOptions: {},
-                        swaggerUrl: basePath + '/json'
-                    })}`), DEFAULT_CHARSET
+                // swagger-ui-init.js
+                if (relUrl.startsWith('/swagger-ui-init.js')) {
+                    const js = Buffer.from(
+                        swaggerUiInitTpl.replace('<% swaggerOptions %>', `var options = ${JSON.stringify({
+                            // swaggerDoc: options.document || undefined,
+                            swaggerDoc: swaggerDoc.object,
+                            // customOptions: options.uiOptions || {},
+                            customOptions: {},
+                            swaggerUrl: basePath + '/json'
+                        })}`), DEFAULT_CHARSET
+                    );
+
+                    res.writeHead(200, createHeaders({
+                        ...etag(js),
+                        'Content-Type': CONTENT_TYPE_JAVASCRIPT
+                    }));
+                    res.end(js);
+
+                    return;
+                }
+
+                // JSON download
+                if (relUrl.startsWith('/json')) {
+                    res.writeHead(200, createHeaders({
+                        ...etag(swaggerDoc.json),
+                        'Content-Type': CONTENT_TYPE_JSON,
+                        ...contentDisposition('json')
+                    }));
+                    res.end(swaggerDoc.json);
+
+                    return;
+                }
+
+                // YAML download
+                if (relUrl.startsWith('/yaml')) {
+                    res.writeHead(200, createHeaders({
+                        ...etag(swaggerDoc.yaml),
+                        'Content-Type': CONTENT_TYPE_YAML,
+                        ...contentDisposition('yaml')
+                    }));
+                    res.end(swaggerDoc.yaml);
+
+                    return;
+                }
+
+                // TOML download
+                if (relUrl.startsWith('/toml')) {
+                    res.writeHead(200, createHeaders({
+                        ...etag(swaggerDoc.toml),
+                        'Content-Type': CONTENT_TYPE_TOML,
+                        ...contentDisposition('toml')
+                    }));
+                    res.end(swaggerDoc.toml);
+
+                    return;
+                }
+
+                const file = path.resolve(
+                    path.join(swaggerUIDir, relUrl)
                 );
 
-                res.writeHead(200, createHeaders({
-                    ...etag(js),
-                    'Content-Type': CONTENT_TYPE_JAVASCRIPT
-                }));
-                res.end(js);
+                let cacheEntry = fileCache[file];
+                const sendCacheEntry = () => {
+                    res.writeHead(200, createHeaders({
+                        ...etag(cacheEntry.content, cacheEntry.hash),
+                        'Content-Type': cacheEntry.mime
+                    }));
+                    res.end(cacheEntry.content);
+                };
 
-                return;
-            }
+                if (!cacheEntry) {
+                    if (file.startsWith(swaggerUIDir + path.sep)) {
+                        if (await exists(file)) {
+                            const fileStat = await stat(file);
+                            if (fileStat.isFile()) {
+                                const content = await readFile(file);
+                                const mime = mimeTypes.lookup(file) || 'application/octet-stream';
+                                const hash = hashData(content);
 
-            // JSON download
-            if (relUrl.startsWith('/json')) {
-                res.writeHead(200, createHeaders({
-                    ...etag(swaggerDoc.json),
-                    'Content-Type': CONTENT_TYPE_JSON,
-                    ...contentDisposition('json')
-                }));
-                res.end(swaggerDoc.json);
-
-                return;
-            }
-
-            // YAML download
-            if (relUrl.startsWith('/yaml')) {
-                res.writeHead(200, createHeaders({
-                    ...etag(swaggerDoc.yaml),
-                    'Content-Type': CONTENT_TYPE_YAML,
-                    ...contentDisposition('yaml')
-                }));
-                res.end(swaggerDoc.yaml);
-
-                return;
-            }
-
-            // TOML download
-            if (relUrl.startsWith('/toml')) {
-                res.writeHead(200, createHeaders({
-                    ...etag(swaggerDoc.toml),
-                    'Content-Type': CONTENT_TYPE_TOML,
-                    ...contentDisposition('toml')
-                }));
-                res.end(swaggerDoc.toml);
-
-                return;
-            }
-
-            const file = path.resolve(
-                path.join(swaggerUIDir, relUrl)
-            );
-
-            let cacheEntry = fileCache[file];
-            const sendCacheEntry = () => {
-                res.writeHead(200, createHeaders({
-                    ...etag(cacheEntry.content, cacheEntry.hash),
-                    'Content-Type': cacheEntry.mime
-                }));
-                res.end(cacheEntry.content);
-            };
-
-            if (!cacheEntry) {
-                if (file.startsWith(swaggerUIDir + path.sep)) {
-                    if (await exists(file)) {
-                        const fileStat = await stat(file);
-                        if (fileStat.isFile()) {
-                            const content = await readFile(file);
-                            const mime = mimeTypes.lookup(file) || 'application/octet-stream';
-                            const hash = hashData(content);
-
-                            fileCache[file] = cacheEntry = {
-                                content,
-                                hash,
-                                mime
-                            };
+                                fileCache[file] = cacheEntry = {
+                                    content,
+                                    hash,
+                                    mime
+                                };
+                            }
                         }
                     }
                 }
+
+                if (cacheEntry) {
+                    sendCacheEntry();
+                    return;
+                }
+
+                break;
             }
 
-            if (cacheEntry) {
-                sendCacheEntry();
-                return;
+            res.writeHead(404);
+            res.end();
+        } catch (e) {
+            console.error('swagger-ui-cli', e);
+
+            if (!res.headersSent) {
+                res.writeHead(500);
             }
 
-            break;
+            res.end();
         }
-
-        res.writeHead(404);
-        res.end();
     };
 };
