@@ -1,6 +1,6 @@
 # Change Log (swagger-ui-cli)
 
-## 0.5.0
+## 0.5.1
 
 * bugfixes
 * refactoring
