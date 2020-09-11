@@ -29,7 +29,7 @@ Options
 <file> The source document as local file path or URL. Supports JSON, YAML and TOML.
 
 Examples
-  Starts a new server instance on port 8080 for a new file
+  Starts a new server instance on port 8080 for a local file
   $ swagger-ui swaggerFile.yaml
 
   Using port 8181 and load document from HTTP server

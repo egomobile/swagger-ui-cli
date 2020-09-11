@@ -1,7 +1,7 @@
 {
     "name": "swagger-ui-cli",
     "displayName": "Swagger UI CLI",
-    "version": "0.5.3",
+    "version": "0.6.0",
     "description": "A standalone CLI application, serving Swagger UIs via a HTTP server.",
     "main": "dist/index.js",
     "private": false,
@@ -54,7 +54,7 @@
         "@types/content-type": "^1.1.3",
         "@types/js-yaml": "^3.12.5",
         "@types/mime-types": "^2.1.0",
-        "@types/node": "^10.17.27",
+        "@types/node": "^10.17.32",
         "@types/swagger-ui-dist": "^3.30.0",
         "del-cli": "^3.0.1",
         "eslint": "^7.8.1",
@@ -74,9 +74,9 @@
         "meow": "^7.1.1",
         "mime-types": "^2.1.27",
         "open": "^7.2.1",
-        "ora": "^5.0.0",
+        "ora": "^5.1.0",
         "sanitize-filename": "^1.6.3",
-        "swagger-ui-dist": "^3.32.5"
+        "swagger-ui-dist": "^3.33.0"
     },
     "engines": {
         "node": ">=10.0.0",
