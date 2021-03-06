@@ -53,6 +53,10 @@ You can download documents via browser or HTTP client directly. Examples:
 * http://localhost:8080/toml ([TOML](https://en.wikipedia.org/wiki/TOML))
 * http://localhost:8080/yaml ([YAML](https://en.wikipedia.org/wiki/YAML))
 
+## Contributors
+
+* [Geno Roupsky](https://github.com/groupsky)
+
 ## License
 
 [GPL 3.0](./LICENSE)

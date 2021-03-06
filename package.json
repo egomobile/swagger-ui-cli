@@ -1,7 +1,7 @@
 {
     "name": "swagger-ui-cli",
     "displayName": "Swagger UI CLI",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "description": "A standalone CLI application, serving Swagger UIs via a HTTP server.",
     "main": "dist/index.js",
     "private": false,
