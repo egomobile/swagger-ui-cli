@@ -23,14 +23,18 @@ Usage
   $ swagger-ui [options] <file>
 
 Options
-  --do-not-open   Do not open local URL after server has been started. Default: (false)
-  --port, -p      The custom TCP port. Default: 8080
+  --allow-scripts    Allow the execution of scripts. Default: (false)
+  --do-not-open      Do not open local URL after server has been started. Default: (false)
+  --port, -p         The custom TCP port. Default: 8080
 
 <file> The source document as local file path or URL. Supports JSON, YAML and TOML.
 
 Examples
   Starts a new server instance on port 8080 for a local file
   $ swagger-ui swaggerFile.yaml
+
+  Run a Node.js script (also from a remote host), which builds the document
+  $ swagger-ui buildDoc.js --allow-scripts
 
   Using port 8181 and load document from HTTP server
   $ swagger-ui --port=8181 https://petstore.swagger.io/v2/swagger.json
@@ -39,6 +43,11 @@ Examples
   $ swagger-ui https://example.com/my-api.toml --do-not-open
 `, {
     flags: {
+        'allow-scripts': {
+            type: 'boolean',
+            default: false,
+            isRequired: false
+        },
         'do-not-open': {
             type: 'boolean',
             default: false,

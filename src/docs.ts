@@ -15,6 +15,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// THIS HAS TO BE VERY FIRST!
+import cli from './cli';
+
 import axios from 'axios';
 import contentType from 'content-type';
 import toml from '@iarna/toml';
@@ -24,6 +27,8 @@ import { exitWith } from './cli';
 import { DocumentReader, DEFAULT_CHARSET, ExitCode, MIME_JSON, MIME_TOML, MIME_YAML, NOT_SUPPORTED, MIME_JAVASCRIPT } from './contracts';
 import { withSpinner, readFile, stat } from './utils';
 import { executeCode } from './code';
+
+const canExecuteScripts = cli.flags.allowScripts as boolean;
 
 /**
  * Creates a document reader, which reads from HTTP(s) source.
@@ -42,6 +47,8 @@ export function createHttpDocReader(swaggerUri: string): DocumentReader {
             supportedTypeByFileExt = MIME_YAML;
         } else if (swaggerUri.endsWith('.toml')) {
             supportedTypeByFileExt = MIME_TOML;
+        } else if (swaggerUri.endsWith('.js')) {
+            supportedTypeByFileExt = MIME_JAVASCRIPT;
         }
 
         const resp = await withSpinner(
@@ -67,8 +74,8 @@ export function createHttpDocReader(swaggerUri: string): DocumentReader {
                 return yaml.safeLoad(getStringData(enc));
             } else if (type?.endsWith('toml')) {
                 return toml.parse(getStringData(enc));
-            } else if (type?.endsWith('javascript')) {
-                return executeCode(getStringData(enc));
+            } else if (canExecuteScripts && type?.endsWith('javascript')) {
+                return await executeCode(getStringData(enc));
             }
 
             return NOT_SUPPORTED;
@@ -104,7 +111,7 @@ export function createHttpDocReader(swaggerUri: string): DocumentReader {
         }
 
         if (doc === NOT_SUPPORTED) {
-            exitWith(ExitCode.InvalidDocumentFormat, `${swaggerUri} must be of one of the following types: json, toml, yaml, yml!`);
+            showInvalidDocumentError(swaggerUri);
         }
 
         return doc;
@@ -131,10 +138,22 @@ export function createLocalFileDocReader(swaggerFile: string): DocumentReader {
             return yaml.safeLoad(await readFile(swaggerFile, DEFAULT_CHARSET));
         } else if (swaggerFile.endsWith('.toml')) {
             return toml.parse(await readFile(swaggerFile, DEFAULT_CHARSET));
-        } else if (swaggerFile.endsWith('.js')) {
+        } else if (canExecuteScripts && swaggerFile.endsWith('.js')) {
             return executeCode(await readFile(swaggerFile, DEFAULT_CHARSET));
         }
 
-        exitWith(ExitCode.InvalidDocumentFormat, `${swaggerFile} must have one of the following file extensions: json, toml, yaml, yml!`);
+        showInvalidDocumentError(swaggerFile);
     };
+}
+
+function showInvalidDocumentError(pathOrUri: string) {
+    const allowedExtensions: string[] = ['json', 'toml', 'yaml', 'yml'];
+    if (canExecuteScripts) {
+        allowedExtensions.unshift('js');
+    }
+
+    exitWith(
+        ExitCode.InvalidDocumentFormat,
+        `${pathOrUri} must be of one of the following types: ${allowedExtensions.join(', ')}!`
+    );
 }

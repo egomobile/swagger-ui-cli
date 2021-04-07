@@ -35,11 +35,7 @@ const swaggerUIDir = path.resolve(getAbsoluteFSPath());
  */
 export default (): RequestListener => {
     const lastModified = new Date().toUTCString();
-    const etagPrefix = `${
-        hashData(Buffer.from(lastModified, 'utf8'))
-    }-${
-        crypto.randomBytes(4).toString('hex')
-    }-`;
+    const etagPrefix = `${hashData(Buffer.from(lastModified, 'utf8'))}-${crypto.randomBytes(4).toString('hex')}-`;
 
     const createHeaders = (headers: OutgoingHttpHeaders): OutgoingHttpHeaders => ({
         'Last-Modified': lastModified,
