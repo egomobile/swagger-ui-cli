@@ -21,8 +21,9 @@ import toml from '@iarna/toml';
 import yaml from 'js-yaml';
 import { Nilable } from '@egodigital/types';
 import { exitWith } from './cli';
-import { DocumentReader, DEFAULT_CHARSET, ExitCode, MIME_JSON, MIME_TOML, MIME_YAML, NOT_SUPPORTED } from './contracts';
+import { DocumentReader, DEFAULT_CHARSET, ExitCode, MIME_JSON, MIME_TOML, MIME_YAML, NOT_SUPPORTED, MIME_JAVASCRIPT } from './contracts';
 import { withSpinner, readFile, stat } from './utils';
+import { executeCode } from './code';
 
 /**
  * Creates a document reader, which reads from HTTP(s) source.
@@ -59,13 +60,15 @@ export function createHttpDocReader(swaggerUri: string): DocumentReader {
             return resp.data.toString(DEFAULT_CHARSET);
         };
 
-        const tryParseDoc = (type: Nilable<string>, enc = DEFAULT_CHARSET) => {
+        const tryParseDoc = async (type: Nilable<string>, enc = DEFAULT_CHARSET) => {
             if (type?.endsWith('json')) {
                 return JSON.parse(getStringData(enc));
             } else if (type?.endsWith('yaml')) {
                 return yaml.safeLoad(getStringData(enc));
             } else if (type?.endsWith('toml')) {
                 return toml.parse(getStringData(enc));
+            } else if (type?.endsWith('javascript')) {
+                return executeCode(getStringData(enc));
             }
 
             return NOT_SUPPORTED;
@@ -87,15 +90,17 @@ export function createHttpDocReader(swaggerUri: string): DocumentReader {
                 type = MIME_YAML;
             } else if (type?.endsWith('toml')) {
                 type = MIME_TOML;
+            } else if (type?.endsWith('javascript')) {
+                type = MIME_JAVASCRIPT;
             }
 
             // try parse by content type
-            doc = tryParseDoc(type, enc);
+            doc = await tryParseDoc(type, enc);
         }
 
         if (doc === NOT_SUPPORTED) {
             // now try by file extension
-            doc = tryParseDoc(supportedTypeByFileExt);
+            doc = await tryParseDoc(supportedTypeByFileExt);
         }
 
         if (doc === NOT_SUPPORTED) {
@@ -126,6 +131,8 @@ export function createLocalFileDocReader(swaggerFile: string): DocumentReader {
             return yaml.safeLoad(await readFile(swaggerFile, DEFAULT_CHARSET));
         } else if (swaggerFile.endsWith('.toml')) {
             return toml.parse(await readFile(swaggerFile, DEFAULT_CHARSET));
+        } else if (swaggerFile.endsWith('.js')) {
+            return executeCode(await readFile(swaggerFile, DEFAULT_CHARSET));
         }
 
         exitWith(ExitCode.InvalidDocumentFormat, `${swaggerFile} must have one of the following file extensions: json, toml, yaml, yml!`);

@@ -113,6 +113,10 @@ export const DEFAULT_CHARSET = 'utf8';
  */
 export const DEFAULT_CHARSET_HTTP = 'utf-8';
 /**
+ * MIME type JavaScript
+ */
+export const MIME_JAVASCRIPT = 'text/javascript';
+/**
  * MIME type JSON
  */
 export const MIME_JSON = 'application/json';
