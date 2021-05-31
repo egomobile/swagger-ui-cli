@@ -1,5 +1,11 @@
 # Change Log (swagger-ui-cli)
 
+## 0.9.1
+
+* CLI requires a least [Node.js 12+](https://nodejs.org/en/blog/release/v12.0.0/) now
+* change owner to [e.GO Mobile](https://e-go-mobile.com/)
+* `npm update`
+
 ## 0.8.0
 
 * can execute JavaScript code now, to build a Swagger document

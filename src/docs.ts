@@ -1,6 +1,6 @@
 /**
  * swagger-ui-cli - Standalone Swagger UI server
- * Copyright (C) 2020  e.GO Digital GmbH, Aachen, Germany
+ * Copyright (C) 2021  Next.e.GO Mobile SE, Aachen, Germany
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ import axios from 'axios';
 import contentType from 'content-type';
 import toml from '@iarna/toml';
 import yaml from 'js-yaml';
-import { Nilable } from '@egodigital/types';
+import { Nilable } from '@egomobile/types';
 import { exitWith } from './cli';
 import { DocumentReader, DEFAULT_CHARSET, ExitCode, MIME_JSON, MIME_TOML, MIME_YAML, NOT_SUPPORTED, MIME_JAVASCRIPT } from './contracts';
 import { withSpinner, readFile, stat } from './utils';

@@ -1,6 +1,6 @@
 /**
  * swagger-ui-cli - Standalone Swagger UI server
- * Copyright (C) 2020  e.GO Digital GmbH, Aachen, Germany
+ * Copyright (C) 2021  Next.e.GO Mobile SE, Aachen, Germany
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

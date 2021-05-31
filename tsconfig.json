@@ -1,9 +1,9 @@
 {
-    "extends": "@egodigital/tsconfig",
+    "extends": "@egomobile/tsconfig",
     "compilerOptions": {
         "outDir": "./dist",
         "rootDir": "./src",
-        "esModuleInterop": true,
+        "moduleResolution": "node",
         "declaration": true,
         "target": "es2017",
         "lib": [
