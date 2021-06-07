@@ -118,7 +118,7 @@ async function run() {
     // create and start server
     const server = createHttpServer();
     server.listen(port, () => {
-        const localUri = `http://127.0.0.1:${port}`;
+        const localUri = `http://0.0.0.0:${port}`;
 
         console.log('🏄', 'Swagger UI running:');
         console.log(`   * ${localUri}`);
