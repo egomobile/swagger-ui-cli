@@ -51,7 +51,7 @@ $ swagger-ui --help
 
 ### Scripts
 
-If have a complex logic to build an [OpenAPI](https://www.openapis.org/) document, maybe it is separated into multiply sources and parts, you can execute JavaScript code, which runs in the same Node.js environment as the application.
+If you have a complex logic to build an [OpenAPI](https://www.openapis.org/) document, maybe it is separated into multiply sources and parts, you can execute JavaScript code, which runs in the same Node.js environment as the application.
 
 In that case, you have to start the application with `--allow-scripts` flag.
 
@@ -59,19 +59,22 @@ Example:
 
 ```javascript
 // use any Node.js you want
-const fs = require('fs');
+const fs = require("fs");
 // you are also able to access 3rd party modules
 // if a 'node_modules' folder is available
-const axios = require('axios').default;
+const axios = require("axios").default;
 // make use of local Node modules
 // which exports functions that loads
 // parts of the document, e.g.
-const myModule = require('/path/to/my/module.js');
+const myModule = require("/path/to/my/module.js");
 
-const info = await fs.promises.readFile('/path/to/apiDocumentInfo.json', 'utf8');
+const info = await fs.promises.readFile(
+  "/path/to/apiDocumentInfo.json",
+  "utf8"
+);
 
 // maybe load data from remote sources
-const paths = (await axios.get('https://strapi.example.com/paths')).data;
+const paths = (await axios.get("https://strapi.example.com/paths")).data;
 const components = await myModule.loadComponents();
 
 // put all parts together ...
@@ -82,8 +85,8 @@ const doc = {
 
   servers: [
     {
-      url: "http://petstore.swagger.io/api"
-    }
+      url: "http://petstore.swagger.io/api",
+    },
   ],
 
   paths,
@@ -98,13 +101,13 @@ return doc;
 
 You can download documents via browser or HTTP client directly. Examples:
 
-* http://localhost:8080/json ([JSON](https://en.wikipedia.org/wiki/JSON))
-* http://localhost:8080/toml ([TOML](https://en.wikipedia.org/wiki/TOML))
-* http://localhost:8080/yaml ([YAML](https://en.wikipedia.org/wiki/YAML))
+- http://localhost:8080/json ([JSON](https://en.wikipedia.org/wiki/JSON))
+- http://localhost:8080/toml ([TOML](https://en.wikipedia.org/wiki/TOML))
+- http://localhost:8080/yaml ([YAML](https://en.wikipedia.org/wiki/YAML))
 
 ## Contributors
 
-* [Geno Roupsky](https://github.com/groupsky)
+- [Geno Roupsky](https://github.com/groupsky)
 
 ## License
 
