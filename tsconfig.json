@@ -5,9 +5,9 @@
         "rootDir": "./src",
         "moduleResolution": "node",
         "declaration": true,
-        "target": "es2017",
+        "target": "es2019",
         "lib": [
-            "es2017"
+            "es2019"
         ],
         "removeComments": false
     },
