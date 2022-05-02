@@ -1,5 +1,10 @@
 # Change Log (swagger-ui-cli)
 
+## 0.11.0
+
+- application requires at least [Node.js 14](https://nodejs.org/es/blog/release/v14.0.0/) now
+- `npm update`s
+
 ## 0.10.0
 
 - application requires at least [Node.js 12](https://nodejs.org/es/blog/release/v12.0.0/) now

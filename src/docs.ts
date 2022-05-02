@@ -61,7 +61,7 @@ export function createHttpDocReader(swaggerUri: string): DocumentReader {
 
         const getStringData = (enc: string) => {
             try {
-                return resp.data.toString(enc);
+                return resp.data.toString(enc as BufferEncoding);
             } catch { }
 
             return resp.data.toString(DEFAULT_CHARSET);
@@ -71,7 +71,7 @@ export function createHttpDocReader(swaggerUri: string): DocumentReader {
             if (type?.endsWith('json')) {
                 return JSON.parse(getStringData(enc));
             } else if (type?.endsWith('yaml')) {
-                return yaml.safeLoad(getStringData(enc));
+                return yaml.load(getStringData(enc));
             } else if (type?.endsWith('toml')) {
                 return toml.parse(getStringData(enc));
             } else if (canExecuteScripts && type?.endsWith('javascript')) {
@@ -135,7 +135,7 @@ export function createLocalFileDocReader(swaggerFile: string): DocumentReader {
         if (swaggerFile.endsWith('.json')) {
             return JSON.parse(await readFile(swaggerFile, DEFAULT_CHARSET));
         } else if (swaggerFile.endsWith('.yaml') || swaggerFile.endsWith('.yml')) {
-            return yaml.safeLoad(await readFile(swaggerFile, DEFAULT_CHARSET));
+            return yaml.load(await readFile(swaggerFile, DEFAULT_CHARSET));
         } else if (swaggerFile.endsWith('.toml')) {
             return toml.parse(await readFile(swaggerFile, DEFAULT_CHARSET));
         } else if (canExecuteScripts && swaggerFile.endsWith('.js')) {

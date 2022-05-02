@@ -110,7 +110,7 @@ async function run() {
                 toml.stringify(swaggerDoc), DEFAULT_CHARSET
             ),
             yaml: Buffer.from(
-                yaml.safeDump(swaggerDoc), DEFAULT_CHARSET
+                yaml.dump(swaggerDoc), DEFAULT_CHARSET
             )
         };
     }
