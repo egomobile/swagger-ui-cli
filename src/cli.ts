@@ -40,7 +40,7 @@ Examples
   $ swagger-ui buildDoc.js --allow-scripts
 
   Using port 8181 and load document from HTTP server without providing TOML as download
-  $ swagger-ui --no-toml --port=8181 https://raw.githubusercontent.com/apache/superset/1.4.0rc2/docs/src/resources/openapi.json
+  $ swagger-ui https://raw.githubusercontent.com/apache/superset/1.4.0rc2/docs/src/resources/openapi.json --no-toml --port=8181
 
   Do not open browser, after server has been started
   $ swagger-ui https://example.com/my-api.toml --do-not-open
@@ -56,25 +56,25 @@ Examples
             "default": false,
             "isRequired": false
         },
-        "no-json": {
+        "json": {
             "type": "boolean",
-            "default": false,
-            "isRequired": false
-        },
-        "no-toml": {
-            "type": "boolean",
-            "default": false,
-            "isRequired": false
-        },
-        "no-yaml": {
-            "type": "boolean",
-            "default": false,
+            "default": true,
             "isRequired": false
         },
         "port": {
             "type": "number",
             "alias": "p",
             "default": 8080,
+            "isRequired": false
+        },
+        "toml": {
+            "type": "boolean",
+            "default": true,
+            "isRequired": false
+        },
+        "yaml": {
+            "type": "boolean",
+            "default": true,
             "isRequired": false
         }
     }

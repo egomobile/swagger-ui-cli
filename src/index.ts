@@ -110,16 +110,16 @@ async function run() {
         // we are currently supporting only 1 document (s. aboves)
         swaggerDocuments[""] = {
             "fileName": getSafeFilename(""),
-            "json": cli.flags.noJson ? null : Buffer.from(
+            "json": cli.flags.json ? Buffer.from(
                 JSON.stringify(swaggerDoc), DEFAULT_CHARSET
-            ),
+            ) : null,
             "object": swaggerDoc,
-            "toml": cli.flags.noToml ? null : Buffer.from(
+            "toml": cli.flags.toml ? Buffer.from(
                 toml.stringify(swaggerDoc), DEFAULT_CHARSET
-            ),
-            "yaml": cli.flags.noYaml ? null : Buffer.from(
+            ) : null,
+            "yaml": cli.flags.yaml ? Buffer.from(
                 yaml.dump(swaggerDoc), DEFAULT_CHARSET
-            )
+            ) : null
         };
     }
 
