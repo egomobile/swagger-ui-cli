@@ -31,6 +31,9 @@ $ swagger-ui --help
   Options
     --allow-scripts    Allow the execution of scripts. Default: (false)
     --do-not-open      Do not open local URL after server has been started. Default: (false)
+    --no-json          Do not provide JSON data as download. Default: (false)
+    --no-toml          Do not provide TOML data as download. Default: (false)
+    --no-yaml          Do not provide YAML data as download. Default: (false)
     --port, -p         The custom TCP port. Default: 8080
 
   <file> The source document as local file path or URL. Supports JSON, YAML and TOML.

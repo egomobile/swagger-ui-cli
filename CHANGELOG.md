@@ -1,6 +1,6 @@
 # Change Log (swagger-ui-cli)
 
-## 0.12.0
+## 0.12.1
 
 - add optional `no-json`, `no-toml` and `no-yaml` CLI flags, s. [issue #2](https://github.com/egomobile/swagger-ui-cli/issues/2)
 - replace [mime-types](https://www.npmjs.com/package/mime-types) with [mrmime](https://www.npmjs.com/package/mrmime)
