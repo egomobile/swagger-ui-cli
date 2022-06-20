@@ -1,5 +1,13 @@
 # Change Log (swagger-ui-cli)
 
+## 0.12.0
+
+- add optional `no-json`, `no-toml` and `no-yaml` CLI flags, s. [issue #2](https://github.com/egomobile/swagger-ui-cli/issues/2)
+- replace [mime-types](https://www.npmjs.com/package/mime-types) with [mrmime](https://www.npmjs.com/package/mrmime)
+- apply new [eslint settings](https://github.com/egomobile/eslint-config-ego)
+- `npm update`s
+- code cleanups and improvements
+
 ## 0.11.1
 
 - application requires at least [Node.js 14](https://nodejs.org/es/blog/release/v14.0.0/) now

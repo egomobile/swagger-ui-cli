@@ -16,25 +16,25 @@
  */
 
 // THIS HAS TO BE VERY FIRST!
-import cli, { exitWith } from './cli';
+import cli, { exitWith } from "./cli";
 
-import http_request from './request';
-import isDocker from 'is-docker';
-import open from 'open';
-import path from 'path';
-const sanitizeFilename = require('sanitize-filename');
-import toml from '@iarna/toml';
-import yaml from 'js-yaml';
-import { createServer, Server } from 'http';
-import { DEFAULT_CHARSET, DocumentReader, ExitCode } from './contracts';
-import { withSpinner } from './utils';
-import { createHttpDocReader, createLocalFileDocReader } from './docs';
-import { swaggerDocuments } from './globals';
+import http_request from "./request";
+import isDocker from "is-docker";
+import open from "open";
+import path from "path";
+const sanitizeFilename = require("sanitize-filename");
+import toml from "@iarna/toml";
+import yaml from "js-yaml";
+import { createServer, Server } from "http";
+import { DEFAULT_CHARSET, DocumentReader, ExitCode } from "./contracts";
+import { withSpinner } from "./utils";
+import { createHttpDocReader, createLocalFileDocReader } from "./docs";
+import { swaggerDocuments } from "./globals";
 
 
 function getSafeFilename(name: string): string {
-    if (name === '') {
-        name = 'swagger';
+    if (name === "") {
+        name = "swagger";
     }
 
     return sanitizeFilename(name.trim());
@@ -44,11 +44,12 @@ function loadDocument(pathOrUri: string): Promise<any> {
     let docReader: DocumentReader | false = false;
 
     let swaggerFile = pathOrUri;
-    if (swaggerFile !== '') {
-        if (swaggerFile.startsWith('https://') || swaggerFile.startsWith('http://')) {
+    if (swaggerFile !== "") {
+        if (swaggerFile.startsWith("https://") || swaggerFile.startsWith("http://")) {
             // download from HTTP server
             docReader = createHttpDocReader(swaggerFile);
-        } else {
+        }
+        else {
             // local file
             if (!path.isAbsolute(swaggerFile)) {
                 swaggerFile = path.join(process.cwd(), swaggerFile);
@@ -66,7 +67,7 @@ function loadDocument(pathOrUri: string): Promise<any> {
 }
 
 function noSwaggerFile() {
-    exitWith(ExitCode.NoDocumentDefined, 'Please define at least one file with a Swagger documentation!');
+    exitWith(ExitCode.NoDocumentDefined, "Please define at least one file with a Swagger documentation!");
 }
 
 async function run() {
@@ -78,38 +79,45 @@ async function run() {
     const port = cli.flags.port;
 
     // TODO: implement HTTPs support
-    let createHttpServer: () => Server = () => createServer(http_request());
+    let createHttpServer: () => Server = () => {
+        return createServer(http_request());
+    };
 
     // Swagger document
     {
         let swaggerDoc: any;
 
         const sources = cli.input
-            .map(i => i.trim())
-            .filter(i => i !== '');
+            .map(i => {
+                return i.trim();
+            })
+            .filter(i => {
+                return i !== "";
+            });
 
         if (sources.length) {
             // TODO: support more than 1 document
             swaggerDoc = await loadDocument(sources[0]);
-        } else {
+        }
+        else {
             noSwaggerFile();
         }
 
-        if (typeof swaggerDoc !== 'object' || Array.isArray(swaggerDoc)) {
-            exitWith(ExitCode.InvalidDocumentType, 'Swagger document must be a plain object!');
+        if (typeof swaggerDoc !== "object" || Array.isArray(swaggerDoc)) {
+            exitWith(ExitCode.InvalidDocumentType, "Swagger document must be a plain object!");
         }
 
         // we are currently supporting only 1 document (s. aboves)
-        swaggerDocuments[''] = {
-            fileName: getSafeFilename(''),
-            json: Buffer.from(
+        swaggerDocuments[""] = {
+            "fileName": getSafeFilename(""),
+            "json": cli.flags.noJson ? null : Buffer.from(
                 JSON.stringify(swaggerDoc), DEFAULT_CHARSET
             ),
-            object: swaggerDoc,
-            toml: Buffer.from(
+            "object": swaggerDoc,
+            "toml": cli.flags.noToml ? null : Buffer.from(
                 toml.stringify(swaggerDoc), DEFAULT_CHARSET
             ),
-            yaml: Buffer.from(
+            "yaml": cli.flags.noYaml ? null : Buffer.from(
                 yaml.dump(swaggerDoc), DEFAULT_CHARSET
             )
         };
@@ -120,23 +128,24 @@ async function run() {
     server.listen(port, () => {
         const localUri = `http://127.0.0.1:${port}`;
 
-        console.log('🏄', 'Swagger UI running:');
+        console.log("🏄", "Swagger UI running:");
         console.log(`   * ${localUri}`);
 
         if (!shouldNotOpen && !isDocker()) {
             withSpinner(`Open Swagger UI from ${localUri}`, async (spinner) => {
                 try {
                     await open(localUri);
-                } catch (e) {
-                    spinner.warn(`Could not open ${localUri}: ${e}`);
                 }
-            }, '📖');
+                catch (error) {
+                    spinner.warn(`Could not open ${localUri}: ${error}`);
+                }
+            }, "📖");
         }
     });
 }
 
-run().catch(err => {
-    console.error('🚨', err);
+run().catch((error) => {
+    console.error("🚨", error);
 
     process.exit(ExitCode.UncaughtError);
 });

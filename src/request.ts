@@ -15,17 +15,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import crypto from 'crypto';
-import mimeTypes from 'mime-types';
-import path from 'path';
-import { IncomingMessage, OutgoingHttpHeaders, RequestListener, ServerResponse } from 'http';
-import { getAbsoluteFSPath } from 'swagger-ui-dist';
-import { CONTENT_TYPE_JAVASCRIPT, CONTENT_TYPE_JSON, CONTENT_TYPE_TOML, CONTENT_TYPE_YAML, DEFAULT_CHARSET, DEFAULT_CHARSET_HTTP, IFileCacheEntry } from './contracts';
-import { swaggerDocuments } from './globals';
-import { defaultFavIcon, indexHtml as indexHtmlTpl, swaggerUiInit as swaggerUiInitTpl } from './templates';
-import { exists, hashData, normalizePath, readFile, stat } from './utils';
+import crypto from "crypto";
+import mrmime from "mrmime";
+import path from "path";
+import type { IncomingMessage, OutgoingHttpHeaders, RequestListener, ServerResponse } from "http";
+import { getAbsoluteFSPath } from "swagger-ui-dist";
+import { CONTENT_TYPE_JAVASCRIPT, CONTENT_TYPE_JSON, CONTENT_TYPE_TOML, CONTENT_TYPE_YAML, DEFAULT_CHARSET, DEFAULT_CHARSET_HTTP, IFileCacheEntry } from "./contracts";
+import { swaggerDocuments } from "./globals";
+import { defaultFavIcon, indexHtml as indexHtmlTpl, swaggerUiInit as swaggerUiInitTpl } from "./templates";
+import { exists, hashData, normalizePath, readFile, stat } from "./utils";
 
-const fileCache: { [path: string]: IFileCacheEntry } = {};
+const fileCache: { [path: string]: IFileCacheEntry; } = {};
 const swaggerUIDir = path.resolve(getAbsoluteFSPath());
 
 /**
@@ -35,34 +35,36 @@ const swaggerUIDir = path.resolve(getAbsoluteFSPath());
  */
 export default (): RequestListener => {
     const lastModified = new Date().toUTCString();
-    const etagPrefix = `${hashData(Buffer.from(lastModified, 'utf8'))}-${crypto.randomBytes(4).toString('hex')}-`;
+    const etagPrefix = `${hashData(Buffer.from(lastModified, "utf8"))}-${crypto.randomBytes(4).toString("hex")}-`;
 
-    const createHeaders = (headers: OutgoingHttpHeaders): OutgoingHttpHeaders => ({
-        'Last-Modified': lastModified,
-        ...headers
-    });
+    const createHeaders = (headers: OutgoingHttpHeaders): OutgoingHttpHeaders => {
+        return {
+            "Last-Modified": lastModified,
+            ...headers
+        };
+    };
 
     const etag = (data: Buffer, hash?: string): OutgoingHttpHeaders => {
-        if (typeof hash !== 'string') {
+        if (typeof hash !== "string") {
             hash = hashData(data);
         }
 
         return {
-            'Content-Length': data.length,
-            ETag: `"${etagPrefix}${hash}"`
+            "Content-Length": data.length,
+            "ETag": `"${etagPrefix}${hash}"`
         };
     };
 
     const indexHtml = Buffer.from(
-        indexHtmlTpl.replace('<% title %>', 'Swagger UI')
-            .replace('<% favIconString %>', defaultFavIcon)
+        indexHtmlTpl.replace("<% title %>", "Swagger UI")
+            .replace("<% favIconString %>", defaultFavIcon)
             // .replace('<% customJsUrl %>', jsUrl ? `<script src="${jsUrl}"></script>` : '')
-            .replace('<% customJsUrl %>', '')
+            .replace("<% customJsUrl %>", "")
             // .replace('<% customCssUrl %>', cssUrl ? `<link href="${cssUrl}" rel="stylesheet">` : '')
-            .replace('<% customCssUrl %>', '')
-            .replace('<% customCss %>', '')
+            .replace("<% customCssUrl %>", "")
+            .replace("<% customCss %>", "")
             // .replace('<% customJs %>', customJs ? `<script> ${customJs} </script>` : '')
-            .replace('<% customJs %>', '')
+            .replace("<% customJs %>", "")
         , DEFAULT_CHARSET
     );
     const indexHtmlContentType = `text/html; charset=${DEFAULT_CHARSET_HTTP}`;
@@ -71,9 +73,9 @@ export default (): RequestListener => {
     return async (req: IncomingMessage, res: ServerResponse) => {
         try {
             for (const name in swaggerDocuments) {
-                const basePath = '/' + name;
+                const basePath = "/" + name;
 
-                const url = req.url?.split(path.sep).join('/').trim();
+                const url = req.url?.split(path.sep).join("/").trim();
                 if (!url?.startsWith(basePath)) {
                     continue;
                 }
@@ -81,15 +83,17 @@ export default (): RequestListener => {
                 const relUrl = normalizePath(url.substr(basePath.length));
 
                 const swaggerDoc = swaggerDocuments[name];
-                const contentDisposition = (ext: string): OutgoingHttpHeaders => ({
-                    'Content-Disposition': `attachment; filename="${swaggerDoc.fileName}.${ext}`
-                });
+                const contentDisposition = (ext: string): OutgoingHttpHeaders => {
+                    return {
+                        "Content-Disposition": `attachment; filename="${swaggerDoc.fileName}.${ext}`
+                    };
+                };
 
                 // index.html
-                if (['/', '/index.html'].includes(relUrl)) {
+                if (["/", "/index.html"].includes(relUrl)) {
                     res.writeHead(200, createHeaders({
                         ...etag(indexHtml, indexHtmlHash),
-                        'Content-Type': indexHtmlContentType
+                        "Content-Type": indexHtmlContentType
                     }));
                     res.end(indexHtml);
 
@@ -97,60 +101,66 @@ export default (): RequestListener => {
                 }
 
                 // swagger-ui-init.js
-                if (relUrl.startsWith('/swagger-ui-init.js')) {
+                if (relUrl.startsWith("/swagger-ui-init.js")) {
                     const js = Buffer.from(
-                        swaggerUiInitTpl.replace('<% swaggerOptions %>', `var options = ${JSON.stringify({
+                        swaggerUiInitTpl.replace("<% swaggerOptions %>", `var options = ${JSON.stringify({
                             // swaggerDoc: options.document || undefined,
-                            swaggerDoc: swaggerDoc.object,
+                            "swaggerDoc": swaggerDoc.object,
                             // customOptions: options.uiOptions || {},
-                            customOptions: {},
-                            swaggerUrl: basePath + '/json'
+                            "customOptions": {},
+                            "swaggerUrl": basePath + "/json"
                         })}`), DEFAULT_CHARSET
                     );
 
                     res.writeHead(200, createHeaders({
                         ...etag(js),
-                        'Content-Type': CONTENT_TYPE_JAVASCRIPT
+                        "Content-Type": CONTENT_TYPE_JAVASCRIPT
                     }));
                     res.end(js);
 
                     return;
                 }
 
-                // JSON download
-                if (relUrl.startsWith('/json')) {
-                    res.writeHead(200, createHeaders({
-                        ...etag(swaggerDoc.json),
-                        'Content-Type': CONTENT_TYPE_JSON,
-                        ...contentDisposition('json')
-                    }));
-                    res.end(swaggerDoc.json);
+                // JSON download?
+                if (swaggerDoc.json) {
+                    if (relUrl.startsWith("/json")) {
+                        res.writeHead(200, createHeaders({
+                            ...etag(swaggerDoc.json),
+                            "Content-Type": CONTENT_TYPE_JSON,
+                            ...contentDisposition("json")
+                        }));
+                        res.end(swaggerDoc.json);
 
-                    return;
+                        return;
+                    }
                 }
 
-                // YAML download
-                if (relUrl.startsWith('/yaml')) {
-                    res.writeHead(200, createHeaders({
-                        ...etag(swaggerDoc.yaml),
-                        'Content-Type': CONTENT_TYPE_YAML,
-                        ...contentDisposition('yaml')
-                    }));
-                    res.end(swaggerDoc.yaml);
+                // YAML download?
+                if (swaggerDoc.yaml) {
+                    if (relUrl.startsWith("/yaml")) {
+                        res.writeHead(200, createHeaders({
+                            ...etag(swaggerDoc.yaml),
+                            "Content-Type": CONTENT_TYPE_YAML,
+                            ...contentDisposition("yaml")
+                        }));
+                        res.end(swaggerDoc.yaml);
 
-                    return;
+                        return;
+                    }
                 }
 
                 // TOML download
-                if (relUrl.startsWith('/toml')) {
-                    res.writeHead(200, createHeaders({
-                        ...etag(swaggerDoc.toml),
-                        'Content-Type': CONTENT_TYPE_TOML,
-                        ...contentDisposition('toml')
-                    }));
-                    res.end(swaggerDoc.toml);
+                if (swaggerDoc.toml) {
+                    if (relUrl.startsWith("/toml")) {
+                        res.writeHead(200, createHeaders({
+                            ...etag(swaggerDoc.toml),
+                            "Content-Type": CONTENT_TYPE_TOML,
+                            ...contentDisposition("toml")
+                        }));
+                        res.end(swaggerDoc.toml);
 
-                    return;
+                        return;
+                    }
                 }
 
                 const file = path.resolve(
@@ -161,7 +171,7 @@ export default (): RequestListener => {
                 const sendCacheEntry = () => {
                     res.writeHead(200, createHeaders({
                         ...etag(cacheEntry.content, cacheEntry.hash),
-                        'Content-Type': cacheEntry.mime
+                        "Content-Type": cacheEntry.mime
                     }));
                     res.end(cacheEntry.content);
                 };
@@ -172,7 +182,7 @@ export default (): RequestListener => {
                             const fileStat = await stat(file);
                             if (fileStat.isFile()) {
                                 const content = await readFile(file);
-                                const mime = mimeTypes.lookup(file) || 'application/octet-stream';
+                                const mime = mrmime.lookup(file) || "application/octet-stream";
                                 const hash = hashData(content);
 
                                 fileCache[file] = cacheEntry = {
@@ -195,8 +205,9 @@ export default (): RequestListener => {
 
             res.writeHead(404);
             res.end();
-        } catch (e) {
-            console.error('[ERROR]', e);
+        }
+        catch (error) {
+            console.error("[ERROR]", error);
 
             if (!res.headersSent) {
                 res.writeHead(500);

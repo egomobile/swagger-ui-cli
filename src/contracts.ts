@@ -49,21 +49,21 @@ export interface ISwaggerDocumentContext {
      */
     fileName: string;
     /**
-     * Swagger document as JSON string.
+     * Swagger document as JSON string, if defined.
      */
-    json: Buffer;
+    json: Buffer | null;
     /**
      * The Swagger document.
      */
     object: object;
     /**
-     * Swagger document as TOML string.
+     * Swagger document as TOML string, if defined.
      */
-    toml: Buffer;
+    toml: Buffer | null;
     /**
-     * Swagger document as YAML string.
+     * Swagger document as YAML string, if defined.
      */
-    yaml: Buffer;
+    yaml: Buffer | null;
 }
 
 /**
@@ -107,31 +107,31 @@ export enum ExitCode {
 /**
  * Defualt charset
  */
-export const DEFAULT_CHARSET = 'utf8';
+export const DEFAULT_CHARSET = "utf8";
 /**
  * Default charset (HTTP header)
  */
-export const DEFAULT_CHARSET_HTTP = 'utf-8';
+export const DEFAULT_CHARSET_HTTP = "utf-8";
 /**
  * MIME type JavaScript
  */
-export const MIME_JAVASCRIPT = 'text/javascript';
+export const MIME_JAVASCRIPT = "text/javascript";
 /**
  * MIME type JSON
  */
-export const MIME_JSON = 'application/json';
+export const MIME_JSON = "application/json";
 /**
  * MIME type TOML
  */
-export const MIME_TOML = 'application/toml';
+export const MIME_TOML = "application/toml";
 /**
  * MIME type YAML
  */
-export const MIME_YAML = 'application/x-yaml';
+export const MIME_YAML = "application/x-yaml";
 /**
  * A value, that indicates, if something is NOT supported.
  */
-export const NOT_SUPPORTED = Symbol('NOT_SUPPORTED');
+export const NOT_SUPPORTED = Symbol("NOT_SUPPORTED");
 
 /**
  * Content-Type value for JavaScript files.

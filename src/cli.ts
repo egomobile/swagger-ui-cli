@@ -15,8 +15,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import meow from 'meow';
-import { ExitCode } from './contracts';
+import meow from "meow";
+import { ExitCode } from "./contracts";
 
 const cli = meow(`
 Usage
@@ -25,6 +25,9 @@ Usage
 Options
   --allow-scripts    Allow the execution of scripts. Default: (false)
   --do-not-open      Do not open local URL after server has been started. Default: (false)
+  --no-json          Do not provide JSON data as download. Default: (false)
+  --no-toml          Do not provide TOML data as download. Default: (false)
+  --no-yaml          Do not provide YAML data as download. Default: (false)
   --port, -p         The custom TCP port. Default: 8080
 
 <file> The source document as local file path or URL. Supports JSON, YAML and TOML.
@@ -36,28 +39,43 @@ Examples
   Run a Node.js script (also from a remote host), which builds the document
   $ swagger-ui buildDoc.js --allow-scripts
 
-  Using port 8181 and load document from HTTP server
-  $ swagger-ui --port=8181 https://petstore.swagger.io/v2/swagger.json
+  Using port 8181 and load document from HTTP server without providing TOML as download
+  $ swagger-ui --no-toml --port=8181 https://raw.githubusercontent.com/apache/superset/1.4.0rc2/docs/src/resources/openapi.json
 
   Do not open browser, after server has been started
   $ swagger-ui https://example.com/my-api.toml --do-not-open
 `, {
-    flags: {
-        'allow-scripts': {
-            type: 'boolean',
-            default: false,
-            isRequired: false
+    "flags": {
+        "allow-scripts": {
+            "type": "boolean",
+            "default": false,
+            "isRequired": false
         },
-        'do-not-open': {
-            type: 'boolean',
-            default: false,
-            isRequired: false
+        "do-not-open": {
+            "type": "boolean",
+            "default": false,
+            "isRequired": false
         },
-        port: {
-            type: 'number',
-            alias: 'p',
-            default: 8080,
-            isRequired: false
+        "no-json": {
+            "type": "boolean",
+            "default": false,
+            "isRequired": false
+        },
+        "no-toml": {
+            "type": "boolean",
+            "default": false,
+            "isRequired": false
+        },
+        "no-yaml": {
+            "type": "boolean",
+            "default": false,
+            "isRequired": false
+        },
+        "port": {
+            "type": "number",
+            "alias": "p",
+            "default": 8080,
+            "isRequired": false
         }
     }
 });
@@ -69,9 +87,9 @@ Examples
  * @param {any} msg The message.
  */
 export function exitWith(code: ExitCode, msg: any) {
-    console.warn('🛑', msg);
+    console.warn("🛑", msg);
 
-    console.log('');
+    console.log("");
     cli.showHelp(code);
 }
 

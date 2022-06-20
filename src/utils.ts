@@ -15,13 +15,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import crypto from 'crypto';
-import fs from 'fs';
-import ora from 'ora';
-import path from 'path';
-import { promisify } from 'util';
-import { Nilable } from '@egomobile/types';
-import { ExitCode } from './contracts';
+import crypto from "crypto";
+import fs from "fs";
+import ora from "ora";
+import path from "path";
+import { promisify } from "util";
+import type { Nilable } from "@egomobile/types";
+import { ExitCode } from "./contracts";
 
 /**
  * Promise version of 'fs.exists()'.
@@ -44,9 +44,9 @@ export const stat = promisify(fs.stat);
  * @returns {string} The SHA-256 hash.
  */
 export function hashData(data: Buffer): string {
-    return crypto.createHash('sha256')
+    return crypto.createHash("sha256")
         .update(data)
-        .digest('hex');
+        .digest("hex");
 }
 
 /**
@@ -57,20 +57,21 @@ export function hashData(data: Buffer): string {
  * @returns {string} The normalized value.
  */
 export function normalizePath(p: Nilable<string>): string {
-    if (p === null || typeof p === 'undefined') {
-        p = '';
-    } else {
+    if (p === null || typeof p === "undefined") {
+        p = "";
+    }
+    else {
         p = String(p);
     }
 
-    p = p.trim().split(path.sep).join('/');
+    p = p.trim().split(path.sep).join("/");
 
-    while (p.endsWith('/')) {
+    while (p.endsWith("/")) {
         p = p.substr(0, p.length - 1).trim();
     }
 
-    if (!p.startsWith('/')) {
-        p = '/' + p;
+    if (!p.startsWith("/")) {
+        p = "/" + p;
     }
 
     return p;
@@ -88,7 +89,7 @@ export function normalizePath(p: Nilable<string>): string {
 export async function withSpinner<TResult extends any = any>(
     text: string,
     action: (spinner: ora.Ora) => Promise<TResult>,
-    symbol = '✅'
+    symbol = "✅"
 ): Promise<TResult> {
     const spinner = ora(text);
 
@@ -99,8 +100,9 @@ export async function withSpinner<TResult extends any = any>(
         spinner.stopAndPersist({ symbol });
 
         return result;
-    } catch (e) {
-        spinner.fail(`${text}: ${e}`);
+    }
+    catch (error) {
+        spinner.fail(`${text}: ${error}`);
 
         process.exit(ExitCode.UncaughtError);
     }

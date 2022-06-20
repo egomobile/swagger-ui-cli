@@ -16,8 +16,8 @@
  */
 
 // s. https://github.com/scottie1984/swagger-ui-express/blob/da6d0e24a703a6c274385f9523252b56ad6538a4/index.js#L5
-export const defaultFavIcon = '<link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />' +
-  '<link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />';
+export const defaultFavIcon = "<link rel=\"icon\" type=\"image/png\" href=\"./favicon-32x32.png\" sizes=\"32x32\" />" +
+  "<link rel=\"icon\" type=\"image/png\" href=\"./favicon-16x16.png\" sizes=\"16x16\" />";
 
 /**
  * index.html

@@ -16,17 +16,17 @@
  */
 
 // THIS HAS TO BE VERY FIRST!
-import cli from './cli';
+import cli from "./cli";
 
-import axios from 'axios';
-import contentType from 'content-type';
-import toml from '@iarna/toml';
-import yaml from 'js-yaml';
-import { Nilable } from '@egomobile/types';
-import { exitWith } from './cli';
-import { DocumentReader, DEFAULT_CHARSET, ExitCode, MIME_JSON, MIME_TOML, MIME_YAML, NOT_SUPPORTED, MIME_JAVASCRIPT } from './contracts';
-import { withSpinner, readFile, stat } from './utils';
-import { executeCode } from './code';
+import axios from "axios";
+import contentType from "content-type";
+import toml from "@iarna/toml";
+import yaml from "js-yaml";
+import type { Nilable } from "@egomobile/types";
+import { exitWith } from "./cli";
+import { DocumentReader, DEFAULT_CHARSET, ExitCode, MIME_JSON, MIME_TOML, MIME_YAML, NOT_SUPPORTED, MIME_JAVASCRIPT } from "./contracts";
+import { withSpinner, readFile, stat } from "./utils";
+import { executeCode } from "./code";
 
 const canExecuteScripts = cli.flags.allowScripts as boolean;
 
@@ -41,40 +41,49 @@ export function createHttpDocReader(swaggerUri: string): DocumentReader {
     return async () => {
         // supported content type by file extension
         let supportedTypeByFileExt: Nilable<string>;
-        if (swaggerUri.endsWith('.json')) {
+        if (swaggerUri.endsWith(".json")) {
             supportedTypeByFileExt = MIME_JSON;
-        } else if (swaggerUri.endsWith('.yaml') || swaggerUri.endsWith('.yml')) {
+        }
+        else if (swaggerUri.endsWith(".yaml") || swaggerUri.endsWith(".yml")) {
             supportedTypeByFileExt = MIME_YAML;
-        } else if (swaggerUri.endsWith('.toml')) {
+        }
+        else if (swaggerUri.endsWith(".toml")) {
             supportedTypeByFileExt = MIME_TOML;
-        } else if (swaggerUri.endsWith('.js')) {
+        }
+        else if (swaggerUri.endsWith(".js")) {
             supportedTypeByFileExt = MIME_JAVASCRIPT;
         }
 
         const resp = await withSpinner(
             `Download from ${swaggerUri}`,
-            () => axios.get<Buffer>(swaggerUri, {
-                responseType: 'arraybuffer'
-            })
-            , '🚚'
+            () => {
+                return axios.get<Buffer>(swaggerUri, {
+                    "responseType": "arraybuffer"
+                });
+            }
+            , "🚚"
         );
 
         const getStringData = (enc: string) => {
             try {
                 return resp.data.toString(enc as BufferEncoding);
-            } catch { }
+            }
+            catch { }
 
             return resp.data.toString(DEFAULT_CHARSET);
         };
 
         const tryParseDoc = async (type: Nilable<string>, enc = DEFAULT_CHARSET) => {
-            if (type?.endsWith('json')) {
+            if (type?.endsWith("json")) {
                 return JSON.parse(getStringData(enc));
-            } else if (type?.endsWith('yaml')) {
+            }
+            else if (type?.endsWith("yaml")) {
                 return yaml.load(getStringData(enc));
-            } else if (type?.endsWith('toml')) {
+            }
+            else if (type?.endsWith("toml")) {
                 return toml.parse(getStringData(enc));
-            } else if (canExecuteScripts && type?.endsWith('javascript')) {
+            }
+            else if (canExecuteScripts && type?.endsWith("javascript")) {
                 return await executeCode(getStringData(enc));
             }
 
@@ -83,21 +92,24 @@ export function createHttpDocReader(swaggerUri: string): DocumentReader {
 
         let doc: any = NOT_SUPPORTED;
 
-        const contentTypeHeader = resp.headers?.['content-type'];
-        if (typeof contentTypeHeader === 'string') {
+        const contentTypeHeader = resp.headers?.["content-type"];
+        if (typeof contentTypeHeader === "string") {
             const ct = contentType.parse(contentTypeHeader);
 
-            const charset = ct.parameters['charset']?.toLowerCase().trim().split('-').join('');
+            const charset = ct.parameters["charset"]?.toLowerCase().trim().split("-").join("");
             const enc = charset || DEFAULT_CHARSET;
 
             let type: Nilable<string> = ct.type?.toLowerCase().trim();
-            if (type?.endsWith('json')) {
+            if (type?.endsWith("json")) {
                 type = MIME_JSON;
-            } else if (type?.endsWith('yaml')) {
+            }
+            else if (type?.endsWith("yaml")) {
                 type = MIME_YAML;
-            } else if (type?.endsWith('toml')) {
+            }
+            else if (type?.endsWith("toml")) {
                 type = MIME_TOML;
-            } else if (type?.endsWith('javascript')) {
+            }
+            else if (type?.endsWith("javascript")) {
                 type = MIME_JAVASCRIPT;
             }
 
@@ -132,13 +144,16 @@ export function createLocalFileDocReader(swaggerFile: string): DocumentReader {
             exitWith(ExitCode.NoFile, `${swaggerFile} is no file!`);
         }
 
-        if (swaggerFile.endsWith('.json')) {
+        if (swaggerFile.endsWith(".json")) {
             return JSON.parse(await readFile(swaggerFile, DEFAULT_CHARSET));
-        } else if (swaggerFile.endsWith('.yaml') || swaggerFile.endsWith('.yml')) {
+        }
+        else if (swaggerFile.endsWith(".yaml") || swaggerFile.endsWith(".yml")) {
             return yaml.load(await readFile(swaggerFile, DEFAULT_CHARSET));
-        } else if (swaggerFile.endsWith('.toml')) {
+        }
+        else if (swaggerFile.endsWith(".toml")) {
             return toml.parse(await readFile(swaggerFile, DEFAULT_CHARSET));
-        } else if (canExecuteScripts && swaggerFile.endsWith('.js')) {
+        }
+        else if (canExecuteScripts && swaggerFile.endsWith(".js")) {
             return executeCode(await readFile(swaggerFile, DEFAULT_CHARSET));
         }
 
@@ -147,13 +162,13 @@ export function createLocalFileDocReader(swaggerFile: string): DocumentReader {
 }
 
 function showInvalidDocumentError(pathOrUri: string) {
-    const allowedExtensions: string[] = ['json', 'toml', 'yaml', 'yml'];
+    const allowedExtensions: string[] = ["json", "toml", "yaml", "yml"];
     if (canExecuteScripts) {
-        allowedExtensions.unshift('js');
+        allowedExtensions.unshift("js");
     }
 
     exitWith(
         ExitCode.InvalidDocumentFormat,
-        `${pathOrUri} must be of one of the following types: ${allowedExtensions.join(', ')}!`
+        `${pathOrUri} must be of one of the following types: ${allowedExtensions.join(", ")}!`
     );
 }
