@@ -28,7 +28,9 @@ Options
   --no-json          Do not provide JSON data as download. Default: (false)
   --no-toml          Do not provide TOML data as download. Default: (false)
   --no-yaml          Do not provide YAML data as download. Default: (false)
+  --password         The password for authentication.
   --port, -p         The custom TCP port. Default: 8080
+  --username         The username for authentication.
 
 <file> The source document as local file path or URL. Supports JSON, YAML and TOML.
 
@@ -42,8 +44,8 @@ Examples
   Using port 8181 and load document from HTTP server without providing TOML as download
   $ swagger-ui https://raw.githubusercontent.com/apache/superset/1.4.0rc2/docs/src/resources/openapi.json --no-toml --port=8181
 
-  Do not open browser, after server has been started
-  $ swagger-ui https://example.com/my-api.toml --do-not-open
+  Do not open browser, after server has been started and use "foo" as username and "bar" as password
+  $ swagger-ui https://example.com/my-api.toml --do-not-open --username=foo --password=bar
 `, {
     "flags": {
         "allow-scripts": {
@@ -61,6 +63,10 @@ Examples
             "default": true,
             "isRequired": false
         },
+        "password": {
+            "type": "string",
+            "isRequired": false
+        },
         "port": {
             "type": "number",
             "alias": "p",
@@ -75,6 +81,10 @@ Examples
         "yaml": {
             "type": "boolean",
             "default": true,
+            "isRequired": false
+        },
+        "username": {
+            "type": "string",
             "isRequired": false
         }
     }

@@ -48,8 +48,8 @@ $ swagger-ui --help
     Using port 8181 and load document from HTTP server without providing TOML as download
     $ swagger-ui https://raw.githubusercontent.com/apache/superset/1.4.0rc2/docs/src/resources/openapi.json --no-toml --port=8181
 
-    Do not open browser, after server has been started
-    $ swagger-ui https://example.com/my-api.toml --do-not-open
+    Do not open browser, after server has been started and use "foo" as username and "bar" as password
+    $ swagger-ui https://example.com/my-api.toml --do-not-open --username=foo --password=bar
 ```
 
 ### Scripts

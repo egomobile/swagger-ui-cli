@@ -18,11 +18,11 @@
 // THIS HAS TO BE VERY FIRST!
 import cli from "./cli";
 
-import axios from "axios";
+import axios, { AxiosBasicCredentials } from "axios";
 import contentType from "content-type";
 import toml from "@iarna/toml";
 import yaml from "js-yaml";
-import type { Nilable } from "@egomobile/types";
+import type { Nilable, Optional } from "@egomobile/types";
 import { exitWith } from "./cli";
 import { DocumentReader, DEFAULT_CHARSET, ExitCode, MIME_JSON, MIME_TOML, MIME_YAML, NOT_SUPPORTED, MIME_JAVASCRIPT } from "./contracts";
 import { withSpinner, readFile, stat } from "./utils";
@@ -31,13 +31,25 @@ import { executeCode } from "./code";
 const canExecuteScripts = cli.flags.allowScripts as boolean;
 
 /**
+ * Options for `createHttpDocReader()` function.
+ */
+export interface ICreateHttpDocReaderOptions {
+    /**
+     * The Swagger UI.
+     */
+    swaggerUri: string;
+}
+
+/**
  * Creates a document reader, which reads from HTTP(s) source.
  *
- * @param {string} swaggerUri The source URL.
+ * @param {ICreateHttpDocReaderOptions} options The options.
  *
  * @returns {DocumentReader} The new reader.
  */
-export function createHttpDocReader(swaggerUri: string): DocumentReader {
+export function createHttpDocReader(options: ICreateHttpDocReaderOptions): DocumentReader {
+    const { swaggerUri } = options;
+
     return async () => {
         // supported content type by file extension
         let supportedTypeByFileExt: Nilable<string>;
@@ -57,8 +69,17 @@ export function createHttpDocReader(swaggerUri: string): DocumentReader {
         const resp = await withSpinner(
             `Download from ${swaggerUri}`,
             () => {
+                let auth: Optional<AxiosBasicCredentials>;
+                if (cli.flags.username?.length || cli.flags.password?.length) {
+                    auth = {
+                        "username": cli.flags.username ?? "",
+                        "password": cli.flags.password ?? ""
+                    };
+                }
+
                 return axios.get<Buffer>(swaggerUri, {
-                    "responseType": "arraybuffer"
+                    "responseType": "arraybuffer",
+                    auth
                 });
             }
             , "🚚"

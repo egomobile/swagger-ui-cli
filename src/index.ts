@@ -31,6 +31,10 @@ import { withSpinner } from "./utils";
 import { createHttpDocReader, createLocalFileDocReader } from "./docs";
 import { swaggerDocuments } from "./globals";
 
+interface ILoadDocumentOptions {
+    pathOrUri: string;
+}
+
 
 function getSafeFilename(name: string): string {
     if (name === "") {
@@ -40,14 +44,18 @@ function getSafeFilename(name: string): string {
     return sanitizeFilename(name.trim());
 }
 
-function loadDocument(pathOrUri: string): Promise<any> {
+function loadDocument(options: ILoadDocumentOptions): Promise<any> {
+    const { pathOrUri } = options;
+
     let docReader: DocumentReader | false = false;
 
     let swaggerFile = pathOrUri;
     if (swaggerFile !== "") {
         if (swaggerFile.startsWith("https://") || swaggerFile.startsWith("http://")) {
             // download from HTTP server
-            docReader = createHttpDocReader(swaggerFile);
+            docReader = createHttpDocReader({
+                "swaggerUri": swaggerFile
+            });
         }
         else {
             // local file
@@ -97,7 +105,9 @@ async function run() {
 
         if (sources.length) {
             // TODO: support more than 1 document
-            swaggerDoc = await loadDocument(sources[0]);
+            swaggerDoc = await loadDocument({
+                "pathOrUri": sources[0]
+            });
         }
         else {
             noSwaggerFile();
