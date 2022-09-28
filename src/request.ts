@@ -163,8 +163,9 @@ export default (): RequestListener => {
                     }
                 }
 
+                const pathname = relUrl.substring(0, relUrl.indexOf('?') < 0 ? relUrl.length : relUrl.indexOf('?'))
                 const file = path.resolve(
-                    path.join(swaggerUIDir, relUrl)
+                    path.join(swaggerUIDir, pathname)
                 );
 
                 let cacheEntry = fileCache[file];
