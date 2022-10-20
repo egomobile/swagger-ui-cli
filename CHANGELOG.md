@@ -1,5 +1,10 @@
 # Change Log (swagger-ui-cli)
 
+## 0.14.0
+
+- [Fix Swagger UI OAuth2 Redirect URL with parameters return 404 Response.](https://github.com/egomobile/swagger-ui-cli/pull/3) by [malagege](https://github.com/malagege)
+- `npm update`s
+
 ## 0.12.2
 
 - add optional `no-json`, `no-toml` and `no-yaml` CLI flags, s. [issue #2](https://github.com/egomobile/swagger-ui-cli/issues/2)

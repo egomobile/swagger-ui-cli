@@ -65,7 +65,7 @@ Example:
 const fs = require("fs");
 // you are also able to access 3rd party modules
 // if a 'node_modules' folder is available
-const axios = require("axios").default;
+const axios = require("axios");
 // make use of local Node modules
 // which exports functions that loads
 // parts of the document, e.g.
@@ -110,6 +110,7 @@ You can download documents via browser or HTTP client directly. Examples:
 
 ## Contributors
 
+- [malagege](https://github.com/malagege)
 - [Geno Roupsky](https://github.com/groupsky)
 
 ## License
