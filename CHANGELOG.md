@@ -1,5 +1,10 @@
 # Change Log (swagger-ui-cli)
 
+## 0.15.0
+
+- **BREAKING CHANGE**: module requires at least [Node 16+](https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V16.md) now
+- `npm update`s
+
 ## 0.14.0
 
 - [Fix Swagger UI OAuth2 Redirect URL with parameters return 404 Response.](https://github.com/egomobile/swagger-ui-cli/pull/3) by [malagege](https://github.com/malagege)
