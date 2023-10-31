@@ -16,7 +16,7 @@
  */
 
 import meow from "meow";
-import { ExitCode } from "./contracts";
+import { ExitCode } from "./contracts.js";
 
 const cli = meow(`
 Usage
@@ -48,12 +48,12 @@ Examples
   $ swagger-ui https://example.com/my-api.toml --do-not-open --username=foo --password=bar
 `, {
     "flags": {
-        "allow-scripts": {
+        "allowScripts": {
             "type": "boolean",
             "default": false,
             "isRequired": false
         },
-        "do-not-open": {
+        "doNotOpen": {
             "type": "boolean",
             "default": false,
             "isRequired": false
@@ -69,7 +69,7 @@ Examples
         },
         "port": {
             "type": "number",
-            "alias": "p",
+            "shortFlag": "p",
             "default": 8080,
             "isRequired": false
         },
@@ -86,8 +86,9 @@ Examples
         "username": {
             "type": "string",
             "isRequired": false
-        }
-    }
+        },
+    },
+    importMeta: import.meta
 });
 
 /**

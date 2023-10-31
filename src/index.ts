@@ -16,20 +16,20 @@
  */
 
 // THIS HAS TO BE VERY FIRST!
-import cli, { exitWith } from "./cli";
+import cli, { exitWith } from "./cli.js";
 
-import http_request from "./request";
+import http_request from "./request.js";
 import isDocker from "is-docker";
 import open from "open";
 import path from "path";
-const sanitizeFilename = require("sanitize-filename");
+import sanitizeFilename from "sanitize-filename";
 import toml from "@iarna/toml";
 import yaml from "js-yaml";
 import { createServer, Server } from "http";
-import { DEFAULT_CHARSET, DocumentReader, ExitCode } from "./contracts";
-import { withSpinner } from "./utils";
-import { createHttpDocReader, createLocalFileDocReader } from "./docs";
-import { swaggerDocuments } from "./globals";
+import { DEFAULT_CHARSET, DocumentReader, ExitCode } from "./contracts.js";
+import { withSpinner } from "./utils.js";
+import { createHttpDocReader, createLocalFileDocReader } from "./docs.js";
+import { swaggerDocuments } from "./globals.js";
 
 interface ILoadDocumentOptions {
     pathOrUri: string;
@@ -96,10 +96,10 @@ async function run() {
         let swaggerDoc: any;
 
         const sources = cli.input
-            .map(i => {
+            .map((i: any) => {
                 return i.trim();
             })
-            .filter(i => {
+            .filter((i: string) => {
                 return i !== "";
             });
 

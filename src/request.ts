@@ -16,14 +16,14 @@
  */
 
 import crypto from "crypto";
-import mrmime from "mrmime";
+import * as mrmime from "mrmime";
 import path from "path";
 import type { IncomingMessage, OutgoingHttpHeaders, RequestListener, ServerResponse } from "http";
 import { getAbsoluteFSPath } from "swagger-ui-dist";
-import { CONTENT_TYPE_JAVASCRIPT, CONTENT_TYPE_JSON, CONTENT_TYPE_TOML, CONTENT_TYPE_YAML, DEFAULT_CHARSET, DEFAULT_CHARSET_HTTP, IFileCacheEntry } from "./contracts";
-import { swaggerDocuments } from "./globals";
-import { defaultFavIcon, indexHtml as indexHtmlTpl, swaggerUiInit as swaggerUiInitTpl } from "./templates";
-import { exists, hashData, normalizePath, readFile, stat } from "./utils";
+import { CONTENT_TYPE_JAVASCRIPT, CONTENT_TYPE_JSON, CONTENT_TYPE_TOML, CONTENT_TYPE_YAML, DEFAULT_CHARSET, DEFAULT_CHARSET_HTTP, IFileCacheEntry } from "./contracts.js";
+import { swaggerDocuments } from "./globals.js";
+import { defaultFavIcon, indexHtml as indexHtmlTpl, swaggerUiInit as swaggerUiInitTpl } from "./templates.js";
+import { exists, hashData, normalizePath, readFile, stat } from "./utils.js";
 
 const fileCache: { [path: string]: IFileCacheEntry; } = {};
 const swaggerUIDir = path.resolve(getAbsoluteFSPath());

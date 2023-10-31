@@ -29,8 +29,8 @@ $ swagger-ui --help
     $ swagger-ui [options] <file>
 
   Options
-    --allow-scripts    Allow the execution of scripts. Default: (false)
-    --do-not-open      Do not open local URL after server has been started. Default: (false)
+    --allowScripts    Allow the execution of scripts. Default: (false)
+    --doNotOpen      Do not open local URL after server has been started. Default: (false)
     --no-json          Do not provide JSON data as download. Default: (false)
     --no-toml          Do not provide TOML data as download. Default: (false)
     --no-yaml          Do not provide YAML data as download. Default: (false)
@@ -49,14 +49,14 @@ $ swagger-ui --help
     $ swagger-ui https://raw.githubusercontent.com/apache/superset/1.4.0rc2/docs/src/resources/openapi.json --no-toml --port=8181
 
     Do not open browser, after server has been started and use "foo" as username and "bar" as password
-    $ swagger-ui https://example.com/my-api.toml --do-not-open --username=foo --password=bar
+    $ swagger-ui https://example.com/my-api.toml --doNotOpen --username=foo --password=bar
 ```
 
 ### Scripts
 
 If you have a complex logic to build an [OpenAPI](https://www.openapis.org/) document, maybe it is separated into multiply sources and parts, you can execute JavaScript code, which runs in the same Node.js environment as the application.
 
-In that case, you have to start the application with `--allow-scripts` flag.
+In that case, you have to start the application with `--allowScripts` flag.
 
 Example:
 

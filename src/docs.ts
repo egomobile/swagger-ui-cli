@@ -16,17 +16,17 @@
  */
 
 // THIS HAS TO BE VERY FIRST!
-import cli from "./cli";
+import cli from "./cli.js";
 
 import axios, { AxiosBasicCredentials } from "axios";
 import contentType from "content-type";
 import toml from "@iarna/toml";
 import yaml from "js-yaml";
 import type { Nilable, Optional } from "@egomobile/types";
-import { exitWith } from "./cli";
-import { DocumentReader, DEFAULT_CHARSET, ExitCode, MIME_JSON, MIME_TOML, MIME_YAML, NOT_SUPPORTED, MIME_JAVASCRIPT } from "./contracts";
-import { withSpinner, readFile, stat } from "./utils";
-import { executeCode } from "./code";
+import { exitWith } from "./cli.js";
+import { DocumentReader, DEFAULT_CHARSET, ExitCode, MIME_JSON, MIME_TOML, MIME_YAML, NOT_SUPPORTED, MIME_JAVASCRIPT } from "./contracts.js";
+import { withSpinner, readFile, stat } from "./utils.js";
+import { executeCode } from "./code.js";
 
 const canExecuteScripts = cli.flags.allowScripts as boolean;
 

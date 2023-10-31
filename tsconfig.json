@@ -3,13 +3,17 @@
     "compilerOptions": {
         "outDir": "./dist",
         "rootDir": "./src",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "declaration": true,
-        "target": "es2019",
+        "target": "ESNext",
+        "module": "ESNext",
         "lib": [
             "es2019"
         ],
         "removeComments": false
+    },
+    "ts-node": {
+        "esm": true
     },
     "exclude": [
         "node_modules"
