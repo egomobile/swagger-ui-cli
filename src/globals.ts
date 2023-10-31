@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ISwaggerDocumentContext } from "./contracts";
+import { ISwaggerDocumentContext } from "./contracts.js";
 
 /**
  * Store of Swagger documents.

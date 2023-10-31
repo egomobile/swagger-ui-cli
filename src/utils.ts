@@ -17,11 +17,11 @@
 
 import crypto from "crypto";
 import fs from "fs";
-import ora from "ora";
+import ora, {Ora} from "ora";
 import path from "path";
 import { promisify } from "util";
 import type { Nilable } from "@egomobile/types";
-import { ExitCode } from "./contracts";
+import { ExitCode } from "./contracts.js";
 
 /**
  * Promise version of 'fs.exists()'.
@@ -88,7 +88,7 @@ export function normalizePath(p: Nilable<string>): string {
  */
 export async function withSpinner<TResult extends any = any>(
     text: string,
-    action: (spinner: ora.Ora) => Promise<TResult>,
+    action: (spinner: Ora) => Promise<TResult>,
     symbol = "✅"
 ): Promise<TResult> {
     const spinner = ora(text);
